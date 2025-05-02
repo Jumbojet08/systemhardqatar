@@ -1,0 +1,17 @@
+Write-Host "Configuring Trusted Website List..." -ForegroundColor Yellow
+
+# Define the registry path
+$regPath = "HKLM:\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings"
+
+
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating it..." -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+
+$trustedSites = "google.com"
+
+Set-ItemProperty -Path $regPath -Name "SecurityZoneList" -Value $trustedSites
+
+Write-Host "Trusted websites list has been set successfully: $trustedSites" -ForegroundColor Green

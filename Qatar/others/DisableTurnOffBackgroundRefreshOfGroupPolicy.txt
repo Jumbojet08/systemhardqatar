@@ -1,0 +1,13 @@
+# Registry path for Group Policy refresh
+$regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to disable turning off background refresh of Group Policy
+Set-ItemProperty -Path $regPath -Name "DisableBGRefresh" -Value 0
+
+Write-Host "Background refresh of Group Policy has been enabled." -ForegroundColor Green

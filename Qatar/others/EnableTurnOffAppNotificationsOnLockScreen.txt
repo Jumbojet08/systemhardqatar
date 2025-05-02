@@ -1,0 +1,13 @@
+# Registry path for lock screen notifications settings
+$regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to turn off app notifications on the lock screen
+Set-ItemProperty -Path $regPath -Name "NoLockScreenNotifications" -Value 1
+
+Write-Host "App notifications on the lock screen have been turned off." -ForegroundColor Green

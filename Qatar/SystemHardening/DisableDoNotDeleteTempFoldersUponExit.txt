@@ -1,0 +1,13 @@
+# Registry path for "DeleteTempFilesOnExit" setting
+$regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to disable the deletion of temp files upon exit
+Set-ItemProperty -Path $regPath -Name "DeleteTempFilesOnExit" -Value 0
+
+Write-Host "Deletion of temporary files upon exit is now disabled." -ForegroundColor Green

@@ -1,0 +1,13 @@
+# Registry path for Windows app data sharing settings
+$regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to disable app data sharing between users
+Set-ItemProperty -Path $regPath -Name "NoAppShare" -Value 1
+
+Write-Host "Windows apps are no longer allowed to share application data between users." -ForegroundColor Green

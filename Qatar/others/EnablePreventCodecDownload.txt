@@ -1,0 +1,13 @@
+# Registry path for preventing codec downloads
+$regPath = "HKCU:\Software\Policies\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to prevent codec downloads
+Set-ItemProperty -Path $regPath -Name "NoCodecDownload" -Value 1
+
+Write-Host "Codec download has been prevented." -ForegroundColor Green

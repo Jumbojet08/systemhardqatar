@@ -1,0 +1,13 @@
+# Registry path for "SignSecureChannel" setting
+$secpolicyChannel = "HKLM:\System\CurrentControlSet\Services\Netlogon\Parameters"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $secpolicyChannel)) {
+    Write-Host "Registry path not found. Creating: $secpolicyChannel" -ForegroundColor Yellow
+    New-Item -Path $secpolicyChannel -Force | Out-Null
+}
+
+# Set the registry value to enable digital encryption or signing of secure channel data
+Set-ItemProperty -Path $secpolicyChannel -Name "SignSecureChannel" -Value 1
+
+Write-Host "Secure channel data will be digitally encrypted or signed (always)." -ForegroundColor Green

@@ -1,0 +1,12 @@
+# Ensure PSWindowsUpdate module is installed
+if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+    Install-Module -Name PSWindowsUpdate -Force -Scope CurrentUser
+}
+
+# Import the module
+Import-Module PSWindowsUpdate
+
+# Scan and install only approved updates
+Get-WindowsUpdate -AcceptAll -Install -IgnoreReboot -MicrosoftUpdate
+
+Write-Host "Latest approved Windows patches have been deployed." -ForegroundColor Green

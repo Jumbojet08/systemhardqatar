@@ -1,0 +1,13 @@
+# Registry path to disable Microsoft MAPS
+$regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to disable Microsoft MAPS
+Set-ItemProperty -Path $regPath -Name "DisableMAPS" -Value 1
+
+Write-Host "Microsoft MAPS has been disabled." -ForegroundColor Green

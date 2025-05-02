@@ -1,0 +1,13 @@
+# Set Recycle Bin to delete files after 7 days
+$regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to delete Recycle Bin files after 7 days
+Set-ItemProperty -Path $regPath -Name "RecycleBinFilesDeleteAfter7Days" -Value 7
+
+Write-Host "Recycle Bin files will be deleted after 7 days." -ForegroundColor Green

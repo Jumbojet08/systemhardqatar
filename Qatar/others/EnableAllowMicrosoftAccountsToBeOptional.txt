@@ -1,0 +1,13 @@
+# Registry path for Microsoft account settings
+$regPath = "HKCU:\Software\Policies\Microsoft\Windows\System"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value to allow Microsoft accounts to be optional
+Set-ItemProperty -Path $regPath -Name "AllowMicrosoftAccount" -Value 1
+
+Write-Host "Microsoft accounts are now optional." -ForegroundColor Green

@@ -1,0 +1,12 @@
+$regPath = "HKCU:\Software\Policies\Microsoft\Windows NT\Printers"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $regPath)) {
+    Write-Host "Registry path not found. Creating: $regPath" -ForegroundColor Yellow
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set the registry value for updating drivers for existing connections
+Set-ItemProperty -Path $regPath -Name "RestrictDriverInstallation" -Value 1
+
+Write-Host "Point and Print Restrictions for updating drivers for existing connections have been enabled." -ForegroundColor Green

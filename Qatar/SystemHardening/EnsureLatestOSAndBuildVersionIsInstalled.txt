@@ -1,0 +1,28 @@
+# Get current Windows OS version and build number
+$osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
+$currentVersion = $osInfo.Version
+$currentBuild = $osInfo.BuildNumber
+
+Write-Host "Current OS Version: $currentVersion"
+Write-Host "Current Build Number: $currentBuild"
+
+# Check for Windows updates and install them
+$updateSession = New-Object -ComObject Microsoft.Update.Session
+$updateSearcher = $updateSession.CreateUpdateSearcher()
+
+Write-Host "Checking for updates..."
+$searchResult = $updateSearcher.Search("IsInstalled=0")
+
+if ($searchResult.Updates.Count -gt 0) {
+    Write-Host "Updates found. Installing..."
+    $updatesToInstall = $searchResult.Updates
+    $updateInstaller = $updateSession.CreateUpdateInstaller()
+    $updateInstaller.Updates = $updatesToInstall
+    $installationResult = $updateInstaller.Install()
+    Write-Host "Updates installed successfully."
+} else {
+    Write-Host "No updates available. Your system is up-to-date."
+}
+
+# Optionally, you can prompt to open the Windows Update Assistant for major OS upgrades
+Start-Process "ms-settings:windowsupdate-action"
