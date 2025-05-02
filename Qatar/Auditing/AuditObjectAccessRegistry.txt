@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Registry" /success:enable /failure:enable

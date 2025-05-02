@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Distribution Group Management" /success:enable /failure:enable

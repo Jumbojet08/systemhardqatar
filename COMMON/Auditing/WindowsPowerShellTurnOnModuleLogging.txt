@@ -1,0 +1,26 @@
+function WindowsPowerShellTurnOnModuleLogging {
+    Write-Host "Configuring PowerShell Module Logging..." -ForegroundColor Cyan
+
+    $moduleLoggingPath = "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging"
+    $moduleNamesPath = "$moduleLoggingPath\ModuleNames"
+
+    # Ensure the keys exist
+    if (!(Test-Path $moduleLoggingPath)) {
+        New-Item -Path $moduleLoggingPath -Force | Out-Null
+    }
+
+    if (!(Test-Path $moduleNamesPath)) {
+        New-Item -Path $moduleNamesPath -Force | Out-Null
+    }
+
+    # Enable module logging
+    Set-ItemProperty -Path $moduleLoggingPath -Name "EnableModuleLogging" -Value 1 -Type DWord
+
+    # Log all modules
+    New-ItemProperty -Path $moduleNamesPath -Name "*" -Value "*" -PropertyType String -Force | Out-Null
+
+    Write-Host "Module Logging has been enabled for all PowerShell modules." -ForegroundColor Green
+}
+
+# Call the function
+WindowsPowerShellTurnOnModuleLogging

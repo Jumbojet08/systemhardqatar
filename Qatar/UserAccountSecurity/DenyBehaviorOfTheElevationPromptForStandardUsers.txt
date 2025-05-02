@@ -1,0 +1,13 @@
+# Registry path for UAC setting
+$regPath = "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System"
+
+# Create the path if it doesn't exist
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+    Write-Host "Created missing registry path: $regPath" -ForegroundColor Yellow
+}
+
+# Set the UAC behavior to "Automatically deny elevation requests"
+Set-ItemProperty -Path $regPath -Name "ConsentPromptBehaviorUser" -Value 0 -Type DWord -Force
+
+Write-Host "UAC prompt for standard users set to 'Automatically deny elevation requests'." -ForegroundColor Green

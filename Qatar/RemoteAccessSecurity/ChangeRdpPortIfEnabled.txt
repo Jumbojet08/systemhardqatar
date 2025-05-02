@@ -1,0 +1,65 @@
+
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Error "You must run this script as an Administrator!"
+    exit 1
+}
+
+
+function Is-RdpEnabled {
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server"
+    $fDenyTSConnections = Get-ItemProperty -Path $regPath -Name "fDenyTSConnections" -ErrorAction Stop
+    return ($fDenyTSConnections.fDenyTSConnections -eq 0)
+}
+
+
+function Set-RdpPort {
+    param (
+        [int]$NewPort
+    )
+    $rdpTcpRegPath = "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp"
+
+    # Set the new port number
+    Set-ItemProperty -Path $rdpTcpRegPath -Name "PortNumber" -Value $NewPort -Type DWord
+
+    Write-Output "RDP port changed to $NewPort successfully."
+
+    # Update Firewall rule to allow new port
+    try {
+        # Create new inbound firewall rule for the new RDP port
+        New-NetFirewallRule -DisplayName "RDP New Port $NewPort" -Direction Inbound -Protocol TCP -LocalPort $NewPort -Action Allow -Profile Any -EdgeTraversalPolicy Allow
+
+        Write-Output "Firewall rule added to allow traffic on TCP port $NewPort."
+    } catch {
+        Write-Error "Failed to create firewall rule: $_"
+        exit 3
+    }
+}
+
+# Main
+if (Is-RdpEnabled) {
+    Write-Output "RDP is enabled. Proceeding to change default RDP port from 3389."
+
+    # Define your custom port here (between 1025–65535 and NOT a common port)
+    $customPort = 3390
+
+    if ($customPort -lt 1025 -or $customPort -gt 65535) {
+        Write-Error "The specified port number $customPort is invalid. Must be between 1025 and 65535."
+        exit 2
+    }
+
+    Set-RdpPort -NewPort $customPort
+
+    # Restart Remote Desktop Service to apply new port
+    Write-Output "Restarting Remote Desktop Services to apply the new port setting..."
+    try {
+        Restart-Service -Name TermService -Force
+        Write-Output "Remote Desktop Services restarted successfully. RDP now listens on port $customPort."
+    } catch {
+        Write-Error "Failed to restart Remote Desktop Services: $_"
+        exit 4
+    }
+
+    Write-Output "IMPORTANT: After this change, connect to the server using the new port (e.g., servername:$customPort)"
+} else {
+    Write-Output "RDP is disabled on this machine. No changes made."
+}

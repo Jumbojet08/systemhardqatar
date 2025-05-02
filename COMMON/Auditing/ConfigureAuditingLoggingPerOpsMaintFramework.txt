@@ -1,0 +1,43 @@
+function ConfigureAuditingAndLoggingPerOMF {
+    Write-Host "Configuring auditing and logging per the Operations and Maintenance Framework..." -ForegroundColor Cyan
+
+    # Enable auditing policies (basic categories)
+    $auditCategories = @(
+        "Account Logon",
+        "Account Management",
+        "Directory Service Access",
+        "Logon/Logoff",
+        "Object Access",
+        "Policy Change",
+        "Privilege Use",
+        "Process Tracking",
+        "System"
+    )
+
+    foreach ($category in $auditCategories) {
+        AuditPol.exe /set /category:"$category" /success:enable /failure:enable | Out-Null
+        Write-Host "Enabled auditing for: $category" -ForegroundColor Green
+    }
+
+    # Set log size and retention settings for Security Log
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Eventlog\Security"
+    if (!(Test-Path $regPath)) {
+        New-Item -Path $regPath -Force | Out-Null
+    }
+
+    Set-ItemProperty -Path $regPath -Name "MaxSize" -Value 327680  # 320 MB
+    Set-ItemProperty -Path $regPath -Name "Retention" -Value 0     # Overwrite events as needed
+    Set-ItemProperty -Path $regPath -Name "AutoBackupLogFiles" -Value 1
+
+    Write-Host "Configured Security Log: Size = 320MB, Retention = overwrite as needed, AutoBackup = enabled." -ForegroundColor Green
+
+    # Optional: Enable command line auditing (adds command line to event logs for process creation)
+    New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\Audit" -Force | Out-Null
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\Audit" -Name "ProcessCreationIncludeCmdLine_Enabled" -Value 1 -Type DWord
+
+    Write-Host "Command-line auditing enabled for process creation events." -ForegroundColor Green
+    Write-Host "Auditing and logging configuration completed." -ForegroundColor Cyan
+}
+
+# Call the function
+ConfigureAuditingAndLoggingPerOMF

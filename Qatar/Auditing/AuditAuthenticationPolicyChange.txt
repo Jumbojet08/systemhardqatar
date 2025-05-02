@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Authentication Policy Change" /success:enable /failure:disable

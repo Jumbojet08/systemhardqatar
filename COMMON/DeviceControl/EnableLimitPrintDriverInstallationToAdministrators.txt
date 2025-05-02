@@ -1,0 +1,16 @@
+function EnableLimitPrintDriverInstallationToAdministrators {
+    $PointAndPrintRegPath = "HKLM:\Software\Policies\Microsoft\Windows NT\Printers\PointAndPrint"
+
+    # Ensure registry path exists
+    if (!(Test-Path $PointAndPrintRegPath)) {
+        New-Item -Path $PointAndPrintRegPath -Force | Out-Null
+    }
+
+    # Enable 'Limit print driver installation to Administrators'
+    Set-ItemProperty -Path $PointAndPrintRegPath -Name "RestrictDriverInstallationToAdministrators" -Value 1 -Type DWord -Force
+
+    Write-Host "Print driver installation is now restricted to Administrators only." -ForegroundColor Green
+}
+
+# Call the function
+EnableLimitPrintDriverInstallationToAdministrators

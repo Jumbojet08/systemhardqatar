@@ -1,0 +1,16 @@
+function RenameBuiltInAdminAccounts {
+    $NewAdminName = "SecAdmin"  # Change this as needed
+
+    # Identify and rename the built-in Administrator account
+    $AdminAccount = Get-WmiObject Win32_UserAccount | Where-Object { $_.SID -like "S-1-5-*-500" }
+
+    if ($AdminAccount) {
+        Rename-LocalUser -Name $AdminAccount.Name -NewName $NewAdminName
+        Write-Host "Built-in Administrator account renamed to: $NewAdminName" -ForegroundColor Green
+    } else {
+        Write-Host "No built-in Administrator account found." -ForegroundColor Yellow
+    }
+}
+
+# Call the function
+RenameBuiltInAdminAccounts

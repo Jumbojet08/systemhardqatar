@@ -1,0 +1,24 @@
+function WindowsPowerShellTurnOnPowerShellTranscription {
+    Write-Host "Enabling PowerShell Transcription Logging..." -ForegroundColor Cyan
+
+    $transcriptionPath = "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription"
+
+    if (!(Test-Path $transcriptionPath)) {
+        New-Item -Path $transcriptionPath -Force | Out-Null
+    }
+
+    # Configure transcription settings
+    Set-ItemProperty -Path $transcriptionPath -Name "EnableTranscripting" -Value 1 -Type DWord
+    Set-ItemProperty -Path $transcriptionPath -Name "OutputDirectory" -Value "C:\Logs\Transcripts" -Type String
+    Set-ItemProperty -Path $transcriptionPath -Name "IncludeInvocationHeader" -Value 1 -Type DWord
+
+    # Ensure output directory exists
+    if (!(Test-Path "C:\Logs\Transcripts")) {
+        New-Item -ItemType Directory -Path "C:\Logs\Transcripts" | Out-Null
+    }
+
+    Write-Host "PowerShell transcription logging enabled. Logs will be saved to C:\Logs\Transcripts" -ForegroundColor Green
+}
+
+# Call the function
+WindowsPowerShellTurnOnPowerShellTranscription

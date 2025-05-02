@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Sensitive Privilege Use" /success:enable /failure:enable

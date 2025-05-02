@@ -1,0 +1,18 @@
+function RemovableStorageDenyAllRemovableStorageAccess {
+    Write-Host "Applying policy to deny all removable storage access..." -ForegroundColor Yellow
+
+    $regPath = "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices"
+    
+    # Ensure the registry path exists
+    if (!(Test-Path $regPath)) {
+        New-Item -Path $regPath -Force | Out-Null
+    }
+
+    # Deny all access to all removable storage classes
+    Set-ItemProperty -Path $regPath -Name "Deny_All" -Value 1 -Type DWord -Force
+
+    Write-Host "All removable storage access has been denied by policy." -ForegroundColor Green
+}
+
+# Call the function
+RemovableStorageDenyAllRemovableStorageAccess

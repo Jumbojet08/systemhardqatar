@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Directory Service Access" /success:enable /failure:enable

@@ -1,0 +1,23 @@
+# Ensure the script is running as Administrator
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Error "You must run this script as an Administrator!"
+    exit 1
+}
+
+# Path to RDP-TCP settings
+$rdpTcpRegPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp"
+
+# Set the minimum encryption level to 3 (High)
+Set-ItemProperty -Path $rdpTcpRegPath -Name "MinEncryptionLevel" -Value 3 -Type DWord
+
+Write-Output "Digitally encrypt or sign data (always) setting has been enabled successfully (MinEncryptionLevel = 3)."
+
+# Automatically restart Remote Desktop Services to apply changes
+Write-Output "Restarting Remote Desktop Services to apply encryption changes..."
+try {
+    Restart-Service -Name TermService -Force
+    Write-Output "Remote Desktop Services restarted successfully. Encryption settings are now active."
+} catch {
+    Write-Error "Failed to restart Remote Desktop Services: $_"
+    exit 2
+}

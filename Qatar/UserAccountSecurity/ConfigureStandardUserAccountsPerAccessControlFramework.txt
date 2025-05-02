@@ -1,0 +1,13 @@
+function ConfigureStandardUserAccountsPerAccessControlFramework {
+    Write-Host "Displaying all standard (non-admin) local user accounts..." -ForegroundColor Cyan
+
+    # Get all local users excluding administrators
+    $standardUsers = Get-LocalUser | Where-Object {
+        ($_ | Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue) -eq $null
+    }
+
+    $standardUsers | Select-Object Name, Enabled, Description | Format-Table -AutoSize
+}
+
+# Call the function
+ConfigureStandardUserAccountsPerAccessControlFramework

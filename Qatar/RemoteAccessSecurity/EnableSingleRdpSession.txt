@@ -1,0 +1,28 @@
+# Ensure the script is running as Administrator
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Error "You must run this script as an Administrator!"
+    exit 1
+}
+
+# Registry path for RDS settings
+$rdpPolicyRegPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services"
+
+# Create the registry key if it does not exist
+if (-not (Test-Path $rdpPolicyRegPath)) {
+    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT" -Name "Terminal Services" -Force | Out-Null
+}
+
+# Set 'Restrict users to a single session' to enabled (1)
+Set-ItemProperty -Path $rdpPolicyRegPath -Name "fSingleSessionPerUser" -Value 1 -Type DWord
+
+Write-Output "Restriction to a single Remote Desktop Services session per user has been enabled successfully."
+
+# Automatically restart Remote Desktop Services to apply changes
+Write-Output "Restarting Remote Desktop Services to apply changes..."
+try {
+    Restart-Service -Name TermService -Force
+    Write-Output "Remote Desktop Services restarted successfully. The single session restriction is now active."
+} catch {
+    Write-Error "Failed to restart Remote Desktop Services: $_"
+    exit 2
+}

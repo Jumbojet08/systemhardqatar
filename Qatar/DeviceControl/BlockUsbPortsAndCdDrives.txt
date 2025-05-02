@@ -1,0 +1,11 @@
+
+Set-ItemProperty -Path "HKLM\SYSTEM\CurrentControlSet\Services\USBSTOR" -Name "Start" -Value 4
+
+# Block CD/DVD drive access via registry (disables CD-ROM driver)
+Set-ItemProperty -Path "HKLM\SYSTEM\CurrentControlSet\Services\cdrom" -Name "Start" -Value 4
+
+# Optional: Prevent users from installing USB devices via Group Policy registry key
+New-Item -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Force | Out-Null
+Set-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyRemovableDevices" -Value 1
+Set-ItemProperty -Path "HKLM\SOFTWARE\Policies\Microsoft\Windows\DeviceInstall\Restrictions" -Name "DenyDeviceInstall" -Value 1
+

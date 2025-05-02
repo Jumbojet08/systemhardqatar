@@ -1,0 +1,28 @@
+function DisableCdRomDrivesForStandardUsers {
+    Write-Host "Disabling CD-ROM drives for standard users..." -ForegroundColor Yellow
+
+    # Disable the CD-ROM driver (sets service to 'Disabled')
+    $cdromRegPath = "HKLM:\SYSTEM\CurrentControlSet\Services\cdrom"
+    try {
+        Set-ItemProperty -Path $cdromRegPath -Name "Start" -Value 4 -Force
+        Write-Host "CD-ROM driver service has been disabled." -ForegroundColor Green
+    } catch {
+        Write-Host "Failed to disable CD-ROM via registry: $_" -ForegroundColor Red
+    }
+
+    # Disable connected CD-ROM devices
+    try {
+        $cdromDevices = Get-PnpDevice | Where-Object { $_.Class -eq "CDROM" }
+        foreach ($device in $cdromDevices) {
+            Disable-PnpDevice -InstanceId $device.InstanceId -Confirm:$false
+            Write-Host "Disabled CD-ROM device: $($device.FriendlyName)" -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "Failed to disable CD-ROM devices: $_" -ForegroundColor Red
+    }
+
+    Write-Host "CD-ROM access restricted for standard users." -ForegroundColor Cyan
+}
+
+# Call the function
+DisableCdRomDrivesForStandardUsers

@@ -1,0 +1,19 @@
+function RemovableStorageEnableCdAndDvdDeny {
+    Write-Host "Applying removable storage policy: Deny CD/DVD read/write access..." -ForegroundColor Yellow
+
+    $regPath = "HKLM:\Software\Policies\Microsoft\Windows\RemovableStorageDevices\{53f56308-b6bf-11d0-94f2-00a0c91efb8b}"
+
+    # Ensure the registry path exists
+    if (!(Test-Path $regPath)) {
+        New-Item -Path $regPath -Force | Out-Null
+    }
+
+    # Deny read and write access to CD/DVD devices
+    Set-ItemProperty -Path $regPath -Name "Deny_Read" -Value 1 -Type DWord -Force
+    Set-ItemProperty -Path $regPath -Name "Deny_Write" -Value 1 -Type DWord -Force
+
+    Write-Host "CD/DVD read and write access denied via removable storage policy." -ForegroundColor Green
+}
+
+# Call the function
+RemovableStorageEnableCdAndDvdDeny

@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Security State Change" /success:enable /failure:enable

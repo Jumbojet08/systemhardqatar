@@ -1,0 +1,16 @@
+function DisableTurnOnConveniencePinSignIn {
+    $RegPath = "HKLM:\Software\Policies\Microsoft\Windows\System"
+
+    # Ensure the registry path exists
+    if (!(Test-Path $RegPath)) {
+        New-Item -Path $RegPath -Force | Out-Null
+    }
+
+    # Disable convenience PIN sign-in
+    Set-ItemProperty -Path $RegPath -Name "AllowDomainPINLogon" -Value 0 -Type DWord -Force
+
+    Write-Host "Convenience PIN sign-in has been disabled." -ForegroundColor Green
+}
+
+# Call the function
+DisableTurnOnConveniencePinSignIn

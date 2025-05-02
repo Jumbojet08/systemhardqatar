@@ -1,0 +1,16 @@
+function DisableAllowWindowsInkWorkspace {
+    $regPath = "HKLM:\Software\Policies\Microsoft\WindowsInkWorkspace"
+
+    # Ensure the registry path exists
+    if (!(Test-Path $regPath)) {
+        New-Item -Path $regPath -Force | Out-Null
+    }
+
+    # Disable Windows Ink Workspace (0 = Disabled)
+    Set-ItemProperty -Path $regPath -Name "AllowWindowsInkWorkspace" -Value 0 -Type DWord -Force
+
+    Write-Output "Windows Ink Workspace has been disabled."
+}
+
+# Call the function
+DisableAllowWindowsInkWorkspace

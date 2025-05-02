@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Application Group Management" /success:enable /failure:enable

@@ -1,0 +1,6 @@
+
+Stop-Service -Name "Audiosrv" -Force
+
+# Disable the Windows Audio service to prevent it from starting
+Set-Service -Name "Audiosrv" -StartupType Disabled
+

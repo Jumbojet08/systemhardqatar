@@ -1,0 +1,16 @@
+function EnableTurnOffAppNotificationsOnTheLockScreen {
+    $RegPath = "HKLM:\Software\Policies\Microsoft\Windows\System"
+
+    # Ensure the registry path exists
+    if (!(Test-Path $RegPath)) {
+        New-Item -Path $RegPath -Force | Out-Null
+    }
+
+    # Turn off app notifications on the lock screen
+    Set-ItemProperty -Path $RegPath -Name "DisableLockScreenAppNotifications" -Value 1 -Type DWord -Force
+
+    Write-Host "App notifications on the lock screen have been turned off." -ForegroundColor Green
+}
+
+# Call the function
+EnableTurnOffAppNotificationsOnTheLockScreen

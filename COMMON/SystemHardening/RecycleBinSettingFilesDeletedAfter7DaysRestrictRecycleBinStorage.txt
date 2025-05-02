@@ -1,0 +1,47 @@
+# Define Recycle Bin cleanup task name
+$taskName = "Auto-Clear Recycle Bin"
+
+# Create a scheduled task to delete files older than 7 days
+$action = New-ScheduledTaskAction -Execute "PowerShell.exe" `
+    -Argument "-NoProfile -ExecutionPolicy Bypass -Command `"Get-ChildItem -Path 'C:\`$Recycle.Bin' -Recurse | Where-Object {(`$_.LastWriteTime -lt (Get-Date).AddDays(-7))} | Remove-Item -Force -Recurse`""
+
+# Create daily trigger at exactly 12:00 PM (format needs to match exactly)
+$trigger = New-ScheduledTaskTrigger -Daily -At "12:00:00"
+
+# Configure required settings with all necessary properties
+$settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -StartWhenAvailable `
+    -MultipleInstances IgnoreNew `
+    -ExecutionTimeLimit (New-TimeSpan -Hours 1)
+
+# First remove existing task if it exists
+Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+
+# Register the new task with SYSTEM account and highest privileges
+Register-ScheduledTask -TaskName $taskName `
+    -Action $action `
+    -Trigger $trigger `
+    -Settings $settings `
+    -User "SYSTEM" `
+    -RunLevel Highest `
+    -Description "Automatically deletes Recycle Bin files older than 7 days" `
+    -Force
+
+Write-Host "Scheduled task '$taskName' created successfully."
+
+# Verify the task
+$task = Get-ScheduledTask -TaskName $taskName
+if ($task.State -eq "Ready") {
+    Write-Host "Task verified and ready to run"
+    
+    # Additional verification
+    Write-Host "Verifying task settings..."
+    $taskInfo = Get-ScheduledTaskInfo -TaskName $taskName
+    Write-Host "Next Run Time: $($taskInfo.NextRunTime)"
+    Write-Host "Last Run Time: $($taskInfo.LastRunTime)"
+    Write-Host "Last Result: $($taskInfo.LastTaskResult)"
+} else {
+    Write-Host "Task may have issues. Current state: $($task.State)"
+}

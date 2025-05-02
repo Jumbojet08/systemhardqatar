@@ -1,0 +1,28 @@
+# Ensure the script is running with elevated privileges
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Error "You must run this script as an Administrator!"
+    exit 1
+}
+
+# Find the built-in Administrator account by SID (ending in -500)
+$adminAccount = Get-LocalUser | Where-Object { $_.SID.Value -match '-500$' }
+
+if ($null -eq $adminAccount) {
+    Write-Error "Built-in Administrator account not found."
+    exit 1
+}
+
+# Check if already disabled
+if (-not $adminAccount.Enabled) {
+    Write-Output "The built-in Administrator account ($($adminAccount.Name)) is already disabled."
+    exit 0
+}
+
+# Disable the account
+try {
+    Disable-LocalUser -Name $adminAccount.Name
+    Write-Output "The built-in Administrator account ($($adminAccount.Name)) has been disabled successfully."
+} catch {
+    Write-Error "Failed to disable the Administrator account: $_"
+    exit 2
+}

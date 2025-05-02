@@ -1,0 +1,16 @@
+function EnablePointAndPrintRestrictionsWhenInstallingNewDrivers {
+    $RegPath = "HKLM:\Software\Policies\Microsoft\Windows NT\Printers\PointAndPrint"
+
+    # Ensure the registry path exists
+    if (!(Test-Path $RegPath)) {
+        New-Item -Path $RegPath -Force | Out-Null
+    }
+
+    # Set restrictions when installing new drivers
+    Set-ItemProperty -Path $RegPath -Name "NoWarningNoElevationOnInstall" -Value 0 -Type DWord -Force
+
+    Write-Host "Point and Print restrictions enabled for installing new printer drivers." -ForegroundColor Green
+}
+
+# Call the function
+EnablePointAndPrintRestrictionsWhenInstallingNewDrivers

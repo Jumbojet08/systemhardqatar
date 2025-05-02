@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Kernel Object" /success:enable /failure:enable

@@ -1,0 +1,16 @@
+function WindowsPowerShellTurnOnPowerShellScriptBlockLogging {
+    Write-Host "Enabling PowerShell Script Block Logging..." -ForegroundColor Cyan
+
+    $sbLoggingPath = "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging"
+
+    if (!(Test-Path $sbLoggingPath)) {
+        New-Item -Path $sbLoggingPath -Force | Out-Null
+    }
+
+    Set-ItemProperty -Path $sbLoggingPath -Name "EnableScriptBlockLogging" -Value 1 -Type DWord
+
+    Write-Host "Script Block Logging has been enabled." -ForegroundColor Green
+}
+
+# Call the function
+WindowsPowerShellTurnOnPowerShellScriptBlockLogging

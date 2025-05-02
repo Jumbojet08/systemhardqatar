@@ -1,0 +1,29 @@
+# Ensure the script is running as Administrator
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Error "You must run this script as an Administrator!"
+    exit 1
+}
+
+# Path to RDP security settings in the registry
+$rdpTcpRegPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp"
+
+# Enable NLA by setting SecurityLayer to 1
+# 0 = RDP Security Layer
+# 1 = Negotiate (use NLA if possible)
+# 2 = SSL (TLS 1.0)
+Set-ItemProperty -Path $rdpTcpRegPath -Name "SecurityLayer" -Value 1
+
+# Require user authentication for remote connections
+Set-ItemProperty -Path $rdpTcpRegPath -Name "UserAuthentication" -Value 1
+
+Write-Output "Network Level Authentication (NLA) has been enabled successfully."
+
+# Automatically restart Remote Desktop Services
+Write-Output "Restarting Remote Desktop Services to apply changes..."
+try {
+    Restart-Service -Name TermService -Force
+    Write-Output "Remote Desktop Services restarted successfully. NLA settings are now active."
+} catch {
+    Write-Error "Failed to restart Remote Desktop Services: $_"
+    exit 2
+}

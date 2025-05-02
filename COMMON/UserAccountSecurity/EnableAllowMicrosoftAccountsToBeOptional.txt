@@ -1,0 +1,12 @@
+# Define the registry path
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+
+# Check if the registry path exists; if not, create it
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set MSAOptional to 1 (Microsoft accounts are optional)
+Set-ItemProperty -Path $RegPath -Name "MSAOptional" -Value 1 -Type DWord
+
+Write-Host "Microsoft accounts are now optional for supported apps. Restart your computer for changes to take effect." -ForegroundColor Green

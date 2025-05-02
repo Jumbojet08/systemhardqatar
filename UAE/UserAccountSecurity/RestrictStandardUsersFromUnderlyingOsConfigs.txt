@@ -1,0 +1,26 @@
+function RestrictStandardUsersFromUnderlyingOsConfigs {
+    Write-Host "Restricting standard users from modifying underlying OS configurations..." -ForegroundColor Cyan
+
+    # Example: Remove standard users from "Power Users" or other privileged groups
+    $restrictedGroups = @("Power Users", "Remote Desktop Users")
+
+    foreach ($group in $restrictedGroups) {
+        try {
+            $members = Get-LocalGroupMember -Group $group -ErrorAction SilentlyContinue | Where-Object {
+                ($_ | Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue) -eq $null
+            }
+
+            foreach ($member in $members) {
+                Remove-LocalGroupMember -Group $group -Member $member.Name -ErrorAction SilentlyContinue
+                Write-Host "Removed $($member.Name) from $group." -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Host "Group '$group' not found or no members to remove." -ForegroundColor DarkGray
+        }
+    }
+
+    Write-Host "Standard users restricted from sensitive groups." -ForegroundColor Green
+}
+
+# Call the function
+RestrictStandardUsersFromUnderlyingOsConfigs

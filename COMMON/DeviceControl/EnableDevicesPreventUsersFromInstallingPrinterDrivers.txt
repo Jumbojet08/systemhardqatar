@@ -1,0 +1,16 @@
+function EnableDevicesPreventUsersFromInstallingPrinterDrivers {
+    $SecurityOptionsRegPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Print\Providers\Policies"
+
+    # Ensure registry path exists
+    if (!(Test-Path $SecurityOptionsRegPath)) {
+        New-Item -Path $SecurityOptionsRegPath -Force | Out-Null
+    }
+
+    # Prevent users from installing printer drivers
+    Set-ItemProperty -Path $SecurityOptionsRegPath -Name "RestrictUserPrinterInstallation" -Value 1 -Type DWord -Force
+
+    Write-Host "Users are prevented from installing printer drivers." -ForegroundColor Green
+}
+
+# Call the function
+EnableDevicesPreventUsersFromInstallingPrinterDrivers

@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Audit Policy Change" /success:enable /failure:enable

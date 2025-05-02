@@ -1,0 +1,14 @@
+function DisableBuiltInGuestAccount {
+    # Identify and disable the built-in Guest account
+    $GuestAccount = Get-WmiObject Win32_UserAccount | Where-Object { $_.SID -like "S-1-5-*-501" }
+
+    if ($GuestAccount) {
+        Disable-LocalUser -Name $GuestAccount.Name
+        Write-Host "Built-in Guest account has been disabled." -ForegroundColor Green
+    } else {
+        Write-Host "No built-in Guest account found." -ForegroundColor Yellow
+    }
+}
+
+# Call the function
+DisableBuiltInGuestAccount

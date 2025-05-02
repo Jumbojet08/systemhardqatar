@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Account Lockout" /success:enable /failure:enable

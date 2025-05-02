@@ -1,0 +1,32 @@
+# Registry path for Remote Desktop drive redirection
+$regPath = "HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services"
+
+# Check if the registry path exists
+if (Test-Path $regPath) {
+    # Check if fDisableCdm exists
+    $value = Get-ItemProperty -Path $regPath -Name "fDisableCdm" -ErrorAction SilentlyContinue
+    if ($value) {
+        if ($value.fDisableCdm -eq 1) {
+            Write-Output "Drive redirection is disabled."
+        } else {
+            Write-Output "Drive redirection is enabled or not configured."
+        }
+    } else {
+        Write-Output "'fDisableCdm' registry value is not configured. Creating it and setting to 1 (disabled)."
+        
+        # Create the fDisableCdm value and set it to 1 (disabled)
+        Set-ItemProperty -Path $regPath -Name "fDisableCdm" -Value 1 -Type DWord
+        
+        Write-Output "'fDisableCdm' registry value created and set to 1 (disabled)."
+    }
+} else {
+    Write-Output "Registry path not found. Creating path and setting fDisableCdm to 1 (disabled)."
+
+    # Create the registry path if it doesn't exist
+    New-Item -Path $regPath -Force
+
+    # Create the fDisableCdm value and set it to 1 (disabled)
+    Set-ItemProperty -Path $regPath -Name "fDisableCdm" -Value 1 -Type DWord
+    
+    Write-Output "Registry path and 'fDisableCdm' value created, and set to 1 (disabled)."
+}

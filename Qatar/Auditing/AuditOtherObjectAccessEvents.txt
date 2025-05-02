@@ -1,0 +1,1 @@
+auditpol /set /subcategory:"Other Object Access Events" /success:enable /failure:enable

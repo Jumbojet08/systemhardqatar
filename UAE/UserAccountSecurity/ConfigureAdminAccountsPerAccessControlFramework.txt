@@ -1,0 +1,11 @@
+function ConfigureAdminAccountsPerAccessControlFramework {
+    Write-Host "Listing administrator accounts based on local group membership..." -ForegroundColor Cyan
+
+    # Get users in the Administrators group
+    $adminUsers = Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue
+
+    $adminUsers | Select-Object Name, ObjectClass | Format-Table -AutoSize
+}
+
+# Call the function
+ConfigureAdminAccountsPerAccessControlFramework
